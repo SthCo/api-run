@@ -203,7 +203,18 @@ networks:
     external: true
 ~~~
 
-### 2. traefik.toml
+### 2. networks
+
+Create networks
+~~~
+docker network create internal
+docker network create nextcloud
+docker network create ghost
+docker network create backend-web
+docker network create adminer-web
+docker network create portainer
+~~~
+### 3. traefik.toml
 Change also this in the _traefik/traefik.toml_ :
 
 ~~~
