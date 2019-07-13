@@ -65,7 +65,7 @@
           }
           echo "</ol>";
           ?>
-          <form action="" method="post">
+          <form action="index.php" method="post">
             <label>Name :</label>
             <input type="text" name="new_name" id="name" required="required" placeholder="Super command"/><br/><br/>
             <label>Commande :</label>
@@ -77,6 +77,7 @@ try {
 $dbh = new PDO('pgsql:host=postgresql;port=5432;dbname=prism', 'snowden', 'nsa');
 
 $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // <== add this line
+          if ( (is_null($_POST["new_name"]) == false) && (is_null($_POST["new_command"]) == false) ) {
           $sql = "INSERT INTO command (name,value)
           VALUES ('".$_POST["new_name"]."','".$_POST["new_command"]."')";
           if ($dbh->query($sql)) {
@@ -92,10 +93,12 @@ $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // <== add this l
 
           $dbh = null;
           }
+          }
           catch(PDOException $e)
           {
           echo $e->getMessage();
           }
+          
 
           ?>
 
