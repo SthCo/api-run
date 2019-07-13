@@ -58,25 +58,20 @@ version: '3.7'
 
 services:
   proxy:
-    # Always use a proper version!
     image: traefik:latest #v1.6.6-alpine
-    # Feel free to change the loglevel if needed
     command: --web --docker --logLevel=INFO
     restart: unless-stopped
-    # Here's the networks we created
     networks:
       - ghost
       - backend-web
       - nextcloud
       - adminer-web
-    # The traefik entryPoints
     ports:
       - "80:80"
       - "443:443"
     labels:
-      # Make sure to change the host with your own IP or domain
+      # Step 1 : Make sure to change the host with your own IP or domain
       - "traefik.frontend.rule=Host:traefik.my-own-domain.com"
-      # Traefik will proxy to its own GUI
       - "traefik.port=8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -90,17 +85,15 @@ services:
       - ghost
     labels:
       - "traefik.enable=true"
-      # Make sure to change the host with your own IP or domain
+      # Step 2 : Make sure to change the host with your own IP or domain
       - "traefik.frontend.rule=Host:ghost.my-own-domain.com"
       - "traefik.port=2368"
-      # Specify the coresponding docker network in order to make your proxy works.
       - "traefik.docker.network=ghost"
     volumes:
       - ./ghost/blog:/var/lib/ghost/content
     environment:
-      # You can change the environment mode, development or production
       - NODE_ENV=production
-      # Make sure to change the host with your own IP or domain
+      # Step 3 : Make sure to change the host with your own IP or domain
       - url=https://ghost.my-own-domain.com
   web:
     image: nginx:latest
@@ -109,7 +102,7 @@ services:
         - ./web:/usr/share/nginx/html
         - ./web/nginx.conf:/etc/nginx/conf.d/default.conf
     labels:
-        # Make sure to change the host with your own IP or domain
+        # Step 4 : Make sure to change the host with your own IP or domain
         - "traefik.frontend.rule=Host:web.my-own-domain.com"
         - "traefik.port=80"
         - "traefik.enable=true"
@@ -127,7 +120,7 @@ services:
   postgresql:
     image: postgres:10
     container_name: postgresql
-    #Choose here the parameters for you postgresql database (in Adminer, the host will be "postgresql").
+    # Step 5 : Choose here the parameters for you postgresql database (in Adminer, the host will be "postgresql").
     environment:
       POSTGRES_DB: prism
       POSTGRES_USER: snowden
@@ -142,7 +135,7 @@ services:
     restart: always
     volumes:
       - ./nextcloud/db:/var/lib/postgresql/data
-    #Choose here the env.file for you db database, for nextcloud (in Adminer, the host will be "db").
+    # Step 6 : Choose here the env.file for you db database, for nextcloud (in Adminer, the host will be "db").
     env_file:
       - ./nextcloud/db.env
     networks:
@@ -155,9 +148,9 @@ services:
     volumes:
       - ./nextcloud/app:/var/www/html # Pulls from /var/lib/docker/volumes/nextcloud_nextcloud/_data/
       - ./nextcloud/config:/var/www/html/config # Pulls from local dir
-      #Choose here the volume you want to mount on your nextcloud
+      # Step 7 : Choose here the volume you want to mount on your nextcloud
       - /mnt/volume-nextcloud:/mnt/hdd # Pulls from root
-    #Choose here the env.file for you db database, for nextcloud (in Adminer, the host will be "db").
+    # Step 8 : Choose here the env.file for you db database, for nextcloud (in Adminer, the host will be "db").
     env_file:
       - ./nextcloud/db.env
     depends_on:
@@ -167,10 +160,9 @@ services:
       - internal
     labels:
       - "traefik.backend=nextcloud"
-      # Specify the coresponding docker network in order to make your proxy works.
       - "traefik.docker.network=nextcloud"
       - "traefik.enable=true"
-      # Make sure to change the host with your own IP or domain
+      # Step 9 : Make sure to change the host with your own IP or domain
       - "traefik.frontend.rule=Host:nextcloud.my-own-domain.com"
       - "traefik.port=80"
 
@@ -191,10 +183,9 @@ services:
       - adminer-web
     labels:
       - "traefik.backend=adminer"
-      # Specify the coresponding docker network in order to make your proxy works.
       - "traefik.docker.network=adminer-web"
       - "traefik.enable=true"
-      # Make sure to change the host with your own IP or domain
+      # Step 10 : Make sure to change the host with your own IP or domain
       - "traefik.frontend.rule=Host:adminer.my-own-domain.com"
       - "traefik.port=80"
     depends_on:
@@ -210,7 +201,6 @@ networks:
     external: true
   adminer-web:
     external: true
-
 ~~~
 
 ### 2. traefik.toml
