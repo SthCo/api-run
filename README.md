@@ -51,14 +51,14 @@ So the Docker's containers are designed as below :
 ## How to run it
 
 ### 1. docker-compose.yaml
-There is just some little modifications to do to the _docker-compose.yaml_ :
+There is just some little modifications (10 Steps) to do to the _docker-compose.yaml_ :
 
 ~~~
 version: '3.7'
 
 services:
   proxy:
-    image: traefik:latest #v1.6.6-alpine
+    image: traefik:latest
     command: --web --docker --logLevel=INFO
     restart: unless-stopped
     networks:
