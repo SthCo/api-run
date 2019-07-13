@@ -78,8 +78,8 @@ services:
       - "traefik.port=8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /opt/traefik/traefik.toml:/traefik.toml
-      - /opt/traefik/acme.json:/acme.json
+      - ./traefik/traefik.toml:/traefik.toml
+      - ./traefik/acme.json:/acme.json
   server:
     image: ghost:latest
     container_name: ghost
@@ -94,7 +94,7 @@ services:
       # Specify the coresponding docker network in order to make your proxy works.
       - "traefik.docker.network=ghost"
     volumes:
-      - /opt/ghost/blog:/var/lib/ghost/content
+      - ./ghost/blog:/var/lib/ghost/content
     environment:
       # You can change the environment mode, development or production
       - NODE_ENV=production
@@ -104,8 +104,8 @@ services:
     image: nginx:latest
     container_name: web
     volumes:
-        - /opt/web:/usr/share/nginx/html
-        - /opt/web/nginx.conf:/etc/nginx/conf.d/default.conf
+        - ./web:/usr/share/nginx/html
+        - ./web/nginx.conf:/etc/nginx/conf.d/default.conf
     labels:
         # Make sure to change the host with your own IP or domain
         - "traefik.frontend.rule=Host:web.my-own-domain.com"
@@ -119,7 +119,7 @@ services:
     image: pichouk/php
     container_name: php
     volumes:
-        - /opt/web:/usr/share/nginx/html
+        - ./web:/usr/share/nginx/html
     networks:
       - backend-web
   postgresql:
@@ -131,7 +131,7 @@ services:
       POSTGRES_USER: snowden
       POSTGRES_PASSWORD: nsa
     volumes:
-      - /opt/bdd/web:/var/lib/postgresql/data
+      - ./bdd/web:/var/lib/postgresql/data
     networks:
       - backend-web
       - adminer-web  
@@ -139,10 +139,10 @@ services:
     image: postgres
     restart: always
     volumes:
-      - /opt/nextcloud/db:/var/lib/postgresql/data
+      - ./nextcloud/db:/var/lib/postgresql/data
     #Choose here the env.file for you db database, for nextcloud (in Adminer, the host will be "db").
     env_file:
-      - /opt/nextcloud/db.env
+      - ./nextcloud/db.env
     networks:
       - nextcloud
       - internal
@@ -151,12 +151,13 @@ services:
     image: nextcloud:latest
     restart: always
     volumes:
-      - /opt/nextcloud/app:/var/www/html # Pulls from /var/lib/docker/volumes/nextcloud_nextcloud/_data/
-      - /opt/nextcloud/config:/var/www/html/config # Pulls from local dir
+      - ./nextcloud/app:/var/www/html # Pulls from /var/lib/docker/volumes/nextcloud_nextcloud/_data/
+      - ./nextcloud/config:/var/www/html/config # Pulls from local dir
+      #Choose here the volume you want to mount on your nextcloud
       - /mnt/volume-nextcloud:/mnt/hdd # Pulls from root
     #Choose here the env.file for you db database, for nextcloud (in Adminer, the host will be "db").
     env_file:
-      - /opt/nextcloud/db.env
+      - ./nextcloud/db.env
     depends_on:
       - db
     networks:
@@ -164,6 +165,7 @@ services:
       - internal
     labels:
       - "traefik.backend=nextcloud"
+      # Specify the coresponding docker network in order to make your proxy works.
       - "traefik.docker.network=nextcloud"
       - "traefik.enable=true"
       # Make sure to change the host with your own IP or domain
@@ -174,7 +176,7 @@ services:
     image: redis
     container_name: redis
     volumes:
-      - /opt/nextcloud/redis:/data
+      - ./nextcloud/redis:/data
     networks:
       - nextcloud
       - internal
@@ -187,6 +189,7 @@ services:
       - adminer-web
     labels:
       - "traefik.backend=adminer"
+      # Specify the coresponding docker network in order to make your proxy works.
       - "traefik.docker.network=adminer-web"
       - "traefik.enable=true"
       # Make sure to change the host with your own IP or domain
