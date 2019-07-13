@@ -1,7 +1,7 @@
 # Architecture du projet API RUN P19
 A sample of dockerized multi-site (configured with bind9 DNS).
 
-![bckg](/content/images/bckg.svg)
+![bckg](/content/images/bckg.png)
 
 
 You can display 6 services :
