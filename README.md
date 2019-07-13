@@ -8,7 +8,7 @@ A sample dockerized multi-site.
 * (Optional) several domain registred in a DNS
 ## Services
 You can display 6 services :
-* https://ghost.my-own-domain.com : Ghost blog.
+* https://ghost.my-own-domain.com : Ghost blog (setup page : https://ghost.my-own-domain.com/ghost/#/setup/one).
 * http://traefik.ghost.my-own-domain.com : Traefik dashboard.
 * http://traefik.my-own-domain.com:3000 : Grafana dashboard. 
 * https://web.my-own-domain.com : A simple PHP + PostgreSQL website
