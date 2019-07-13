@@ -77,7 +77,7 @@ try {
 $dbh = new PDO('pgsql:host=postgresql;port=5432;dbname=prism', 'snowden', 'nsa');
 
 $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // <== add this line
-          $sql = "INSERT INTO commande (name,value)
+          $sql = "INSERT INTO command (name,value)
           VALUES ('".$_POST["new_name"]."','".$_POST["new_command"]."')";
           if ($dbh->query($sql)) {
           echo "
