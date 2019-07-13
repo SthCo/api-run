@@ -226,6 +226,8 @@ Then you just need to run docker :
 ~~~
 docker-compose up -d 
 cd traefik
+touch acme.json
+chmod 600 acme.json
 git clone https://github.com/stefanprodan/dockprom
 cd dockprom
 ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose up -d
