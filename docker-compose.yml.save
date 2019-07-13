@@ -1,0 +1,143 @@
+version: '2'
+
+services:
+  proxy:
+    # Always use a proper version! (edited)
+    image: traefik:v1.6.6-alpine
+    # Feel free to change the loglevel if needed
+    command: --web --docker --logLevel=INFO
+    restart: unless-stopped
+    # Here's the network we created
+    networks:
+      - ghost
+      - backend-web
+      - nextcloud
+      - adminer-web
+    # The traefik entryPoints
+    ports:
+      - "80:80"
+      - "443:443"
+    labels:
+      # Make sure this domain points to your IP so that traefik can request a cert
+      - "traefik.frontend.rule=Host:traefik.lucas.picasoft.net"
+      # Traefik will proxy to its own GUI
+      - "traefik.port=8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/traefik/traefik.toml:/traefik.toml
+      - /opt/traefik/acme.json:/acme.json
+  server:
+    image: ghost:alpine
+    container_name: ghost
+    restart: unless-stopped
+    networks:
+      - ghost
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:monsite1.lucas.picasoft.net"
+      - "traefik.port=2368"
+      - "traefik.docker.network=ghost"
+    volumes:
+      - /opt/ghost/blog:/var/lib/ghost/content
+    environment:
+      - NODE_ENV=production
+      - url=https://monsite1.lucas.picasoft.net
+  web:
+    image: nginx:latest
+    container_name: web
+    volumes:
+        - /opt/web:/usr/share/nginx/html
+        - /opt/web/nginx.conf:/etc/nginx/conf.d/default.conf
+    labels:
+        - "traefik.frontend.rule=Host:monsite2.lucas.picasoft.net"
+        - "traefik.port=80"
+        - "traefik.enable=true"
+    networks:
+      - backend-web
+    depends_on:
+      - php
+  php:
+    image: pichouk/php
+    container_name: php
+    volumes:
+        - /opt/web:/usr/share/nginx/html
+    networks:
+      - backend-web
+  postgresql:
+    image: postgres:10
+    container_name: postgresql
+    environment:
+      POSTGRES_DB: prism
+      POSTGRES_USER: snowden
+      POSTGRES_PASSWORD: nsa
+    volumes:
+      - /opt/bdd/web:/var/lib/postgresql/data
+    networks:
+      - backend-web
+      - adminer-web  
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - /opt/nextcloud/db:/var/lib/postgresql/data
+    env_file:
+      - /opt/nextcloud/db.env
+    networks:
+      - nextcloud
+      - internal
+
+  app:
+    image: nextcloud:latest
+    restart: always
+    volumes:
+      - /opt/nextcloud/app:/var/www/html # Pulls from /var/lib/docker/volumes/nextcloud_nextcloud/_data/
+      - /opt/nextcloud/config:/var/www/html/config # Pulls from local dir
+      - /mnt/volume-nextcloud:/mnt/hdd # Pulls from root
+    env_file:
+      - /opt/nextcloud/db.env
+    depends_on:
+      - db
+    networks:
+      - nextcloud
+      - internal
+    labels:
+      - "traefik.backend=nextcloud"
+      - "traefik.docker.network=nextcloud"
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:monsite3.lucas.picasoft.net"
+      - "traefik.port=80"
+
+  redis:
+    image: redis
+    container_name: redis
+    volumes:
+      - /opt/nextcloud/redis:/data
+    networks:
+      - nextcloud
+      - internal
+  adminer:
+    image: dockette/adminer:full-php5
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - adminer-web
+    labels:
+      - "traefik.backend=adminer"
+      - "traefik.docker.network=adminer-web"
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:adminer.lucas.picasoft.net"
+      - "traefik.port=8080"
+    depends_on:
+      - postgresql
+      - db
+networks:
+  internal:
+  nextcloud:
+    external: true
+  ghost:
+    external: true
+  backend-web:
+    external: true
+  adminer-web:
+    external: true
