@@ -3,7 +3,7 @@ version: '3.7'
 services:
   proxy:
     # Always use a proper version!
-    image: traefik:latest #v1.6.6-alpine
+    image: traefik:latest
     # Feel free to change the loglevel if needed
     command: --web --docker --logLevel=INFO
     restart: unless-stopped
