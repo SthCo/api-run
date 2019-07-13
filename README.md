@@ -49,6 +49,8 @@ So the Docker's containers are designed as below :
 ![docker](/content/images/docker.png)
 
 ## How to run it
+
+### 1. docker-compose.yaml
 There is just some little modifications to do to the _docker-compose.yaml_ :
 
 ~~~
@@ -211,6 +213,7 @@ networks:
 
 ~~~
 
+### 2. traefik.toml
 Change also this in the _traefik/traefik.toml_ :
 
 ~~~
@@ -228,7 +231,7 @@ email = "your@adress.com"
 ...
 ~~~
 
-
+### 3. Run 
 Then you just need to run docker :
 ~~~
 docker-compose up -d 
