@@ -1,9 +1,12 @@
 # Architecture du projet API RUN P19
-A sample of dockerized multi-site (configured with bind9 DNS).
+A sample dockerized multi-site.
 
 ![bckg](/content/images/bckg.png)
 
-
+## Required
+* Docker
+* (Optional) several domain registred in a DNS
+## Services
 You can display 6 services :
 * https://ghost.my-own-domain.com : Ghost blog.
 * http://traefik.ghost.my-own-domain.com : Traefik dashboard.
@@ -12,6 +15,8 @@ You can display 6 services :
 * https://nextcloud.my-own-domain.com : Nextcloud.
 * https://adminer.my-own-domain.com : A Adminer dashboard which will allow you to manage the 3 databases of the project.
 
+## Structure
+### Files
 You can find below the project's structure :
 
 ~~~
@@ -38,11 +43,13 @@ You can find below the project's structure :
 
 ~~~
 
+### Docker
 So the Docker's containers are designed as below :
 
 ![docker](/content/images/docker.png)
 
-There is just some little modifications to do to the docker-compose.yaml :
+## How to run it
+There is just some little modifications to do to the _docker-compose.yaml_ :
 
 ~~~
 version: '3.7'
@@ -201,6 +208,23 @@ networks:
 
 ~~~
 
+Change also this in the _traefik/traefik.toml_ :
+
+~~~
+...
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+# Put here your main domain name
+domain = "my-own-domain.com"
+watch = true
+exposedbydefault = false
+
+[acme]
+# Put here your mail adress in order to be informed by a bot when you will need to ask for a new SSL certificate
+email = "your@adress.com"
+...
+~~~
+
 
 Then you just need to run docker :
 ~~~
@@ -210,3 +234,5 @@ git clone https://github.com/stefanprodan/dockprom
 cd dockprom
 ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose up -d
 ~~~
+
+## Enjoy !
