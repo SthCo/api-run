@@ -154,7 +154,7 @@ services:
       - portainer
     labels:
       - traefik.docker.network=portainer
-      - traefik.frontend.rule=Host:traefik.lucas.picasoft.net
+      - traefik.frontend.rule=Host:portainer.lucas.picasoft.net
       - traefik.port=9000
       - traefik.backend=portainer
     command: -H unix:///var/run/docker.sock
