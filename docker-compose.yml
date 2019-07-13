@@ -1,13 +1,13 @@
-version: '2'
+version: '3.7'
 
 services:
   proxy:
-    # Always use a proper version! (edited)
-    image: traefik:v1.6.6-alpine
+    # Always use a proper version!
+    image: traefik:latest #v1.6.6-alpine
     # Feel free to change the loglevel if needed
     command: --web --docker --logLevel=INFO
     restart: unless-stopped
-    # Here's the network we created
+    # Here's the networks we created
     networks:
       - ghost
       - backend-web
@@ -18,8 +18,8 @@ services:
       - "80:80"
       - "443:443"
     labels:
-      # Make sure this domain points to your IP so that traefik can request a cert
-      - "traefik.frontend.rule=Host:traefik.lucas.picasoft.net"
+      # Make sure to change the host with your own IP or domain
+      - "traefik.frontend.rule=Host:traefik.my-own-domain.com"
       # Traefik will proxy to its own GUI
       - "traefik.port=8080"
     volumes:
@@ -27,21 +27,25 @@ services:
       - /opt/traefik/traefik.toml:/traefik.toml
       - /opt/traefik/acme.json:/acme.json
   server:
-    image: ghost:alpine
+    image: ghost:latest
     container_name: ghost
     restart: unless-stopped
     networks:
       - ghost
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:monsite1.lucas.picasoft.net"
+      # Make sure to change the host with your own IP or domain
+      - "traefik.frontend.rule=Host:ghost.my-own-domain.com"
       - "traefik.port=2368"
+      # Specify the coresponding docker network in order to make your proxy works.
       - "traefik.docker.network=ghost"
     volumes:
       - /opt/ghost/blog:/var/lib/ghost/content
     environment:
+      # You can change the environment mode, development or production
       - NODE_ENV=production
-      - url=https://monsite1.lucas.picasoft.net
+      # Make sure to change the host with your own IP or domain
+      - url=https://ghost.my-own-domain.com
   web:
     image: nginx:latest
     container_name: web
@@ -49,7 +53,8 @@ services:
         - /opt/web:/usr/share/nginx/html
         - /opt/web/nginx.conf:/etc/nginx/conf.d/default.conf
     labels:
-        - "traefik.frontend.rule=Host:monsite2.lucas.picasoft.net"
+        # Make sure to change the host with your own IP or domain
+        - "traefik.frontend.rule=Host:web.my-own-domain.com"
         - "traefik.port=80"
         - "traefik.enable=true"
     networks:
@@ -66,6 +71,7 @@ services:
   postgresql:
     image: postgres:10
     container_name: postgresql
+    #Choose here the parameters for you postgresql database (in Adminer, the host will be "postgresql").
     environment:
       POSTGRES_DB: prism
       POSTGRES_USER: snowden
@@ -80,6 +86,7 @@ services:
     restart: always
     volumes:
       - /opt/nextcloud/db:/var/lib/postgresql/data
+    #Choose here the env.file for you db database, for nextcloud (in Adminer, the host will be "db").
     env_file:
       - /opt/nextcloud/db.env
     networks:
@@ -93,6 +100,7 @@ services:
       - /opt/nextcloud/app:/var/www/html # Pulls from /var/lib/docker/volumes/nextcloud_nextcloud/_data/
       - /opt/nextcloud/config:/var/www/html/config # Pulls from local dir
       - /mnt/volume-nextcloud:/mnt/hdd # Pulls from root
+    #Choose here the env.file for you db database, for nextcloud (in Adminer, the host will be "db").
     env_file:
       - /opt/nextcloud/db.env
     depends_on:
@@ -104,7 +112,8 @@ services:
       - "traefik.backend=nextcloud"
       - "traefik.docker.network=nextcloud"
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:monsite3.lucas.picasoft.net"
+      # Make sure to change the host with your own IP or domain
+      - "traefik.frontend.rule=Host:nextcloud.my-own-domain.com"
       - "traefik.port=80"
 
   redis:
@@ -126,7 +135,8 @@ services:
       - "traefik.backend=adminer"
       - "traefik.docker.network=adminer-web"
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:adminer.lucas.picasoft.net"
+      # Make sure to change the host with your own IP or domain
+      - "traefik.frontend.rule=Host:adminer.my-own-domain.com"
       - "traefik.port=80"
     depends_on:
       - postgresql
