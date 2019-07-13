@@ -7,13 +7,14 @@ A sample dockerized multi-site.
 * Docker
 * (Optional) several domain registred in a DNS
 ## Services
-You can display 6 services :
+You can display 7 services :
 * https://ghost.my-own-domain.com : Ghost blog (setup page : https://ghost.my-own-domain.com/ghost/#/setup/one).
 * http://traefik.ghost.my-own-domain.com : Traefik dashboard.
 * http://traefik.my-own-domain.com:3000 : Grafana dashboard. 
 * https://web.my-own-domain.com : A simple PHP + PostgreSQL website
 * https://nextcloud.my-own-domain.com : Nextcloud.
 * https://adminer.my-own-domain.com : A Adminer dashboard which will allow you to manage the 3 databases of the project.
+* https://portainer.my-own-domain.com : A Portainer dashboard.
 
 ## Structure
 ### Files
@@ -243,5 +244,69 @@ git clone https://github.com/stefanprodan/dockprom
 cd dockprom
 ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose up -d
 ~~~
+
+### (Optional) Your own DNS with bind9
+
+First install bind9
+~~~
+apt-get install bind9 
+~~~
+
+Then 
+~~~
+sudo nano /etc/bind/db.lucas.picasoft.net
+~~~
+
+Fill the file like below :
+~~~
+$TTL    10800
+@       IN      SOA     ns1.your-own-domain.com. root.your-own-domain.com. (
+                    2019070901         ; Serial
+                         10800         ; Refresh
+                         86400         ; Retry
+                       2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+ ;
+@       IN      NS      ns1
+ns1     IN      A       your-ip
+ghost    IN      A       your-ip
+web    IN      A       your-ip
+nextcloud    IN      A       your-ip
+traefik     IN      A       your-ip
+adminer     IN      A       your-ip
+portainer   IN      A       your-ip
+
+~~~
+
+And
+~~~
+sudo nano /etc/bind/named.conf
+~~~
+
+Again fill the file like below :
+~~~
+// This is the primary configuration file for the BIND DNS server named.
+//
+// Please read /usr/share/doc/bind9/README.Debian.gz for information on the
+// structure of BIND configuration files in Debian, *BEFORE* you customize
+// this configuration file.
+//
+// If you are just adding zones, please do that in /etc/bind/named.conf.local
+
+include "/etc/bind/named.conf.options";
+include "/etc/bind/named.conf.local";
+include "/etc/bind/named.conf.default-zones";
+
+~~~
+
+Finally run bind9
+~~~
+sudo systemctl start bind9
+~~~
+And check the status 
+~~~
+sudo systemctl status bind9
+~~~
+
 
 ## Enjoy !
