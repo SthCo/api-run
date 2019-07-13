@@ -52,6 +52,8 @@ There is just some little modifications to do to the docker-compose.yaml :
 Then you just need to run docker :
 ~~~
 docker-compose up -d 
-cd traefik/dockprom
+cd traefik
+git clone https://github.com/stefanprodan/dockprom
+cd dockprom
 ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose up -d
 ~~~
