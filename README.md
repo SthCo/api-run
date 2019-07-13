@@ -8,7 +8,7 @@ A sample dockerized multi-site.
 * (Optional) several domain registred in a DNS
 ## Services
 You can display 6 services :
-* https://ghost.my-own-domain.com : Ghost blog.
+* https://ghost.my-own-domain.com : Ghost blog (setup page : https://ghost.my-own-domain.com/ghost/#/setup/one).
 * http://traefik.ghost.my-own-domain.com : Traefik dashboard.
 * http://traefik.my-own-domain.com:3000 : Grafana dashboard. 
 * https://web.my-own-domain.com : A simple PHP + PostgreSQL website
@@ -226,6 +226,8 @@ Then you just need to run docker :
 ~~~
 docker-compose up -d 
 cd traefik
+touch acme.json
+chmod 600 acme.json
 git clone https://github.com/stefanprodan/dockprom
 cd dockprom
 ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose up -d
