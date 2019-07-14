@@ -10,8 +10,8 @@ A sample dockerized multi-site.
 ## Services
 You can display 7 services :
 * https://ghost.my-own-domain.com : Ghost blog (setup page : https://ghost.my-own-domain.com/ghost/#/setup/one).
-* http://traefik.ghost.my-own-domain.com : Traefik dashboard.
-* http://traefik.my-own-domain.com:3000 : Grafana dashboard. 
+* https://traefik.ghost.my-own-domain.com : Traefik dashboard.
+* https://traefik.my-own-domain.com:3000 : Grafana dashboard. 
 * https://web.my-own-domain.com : A simple PHP + PostgreSQL website
 * https://nextcloud.my-own-domain.com : Nextcloud.
 * https://adminer.my-own-domain.com : A Adminer dashboard which will allow you to manage the 3 databases of the project.
