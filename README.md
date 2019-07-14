@@ -52,7 +52,7 @@ So the Docker's containers are designed as below :
 
 ## How to run it
 
-### (Optional) Your own DNS with bind9
+### (Optional) Your own DNS Server with bind9
 
 First install bind9
 ~~~
@@ -117,6 +117,11 @@ And check the status
 ~~~
 sudo systemctl status bind9
 ~~~
+
+*You will also need to configure your domain name provider with the same parameters you put in _db.your-own-domain.com_.*
+
+
+
 
 ### 0. Install docker
 
