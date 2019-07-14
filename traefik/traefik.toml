@@ -25,6 +25,8 @@ email = "your@address.com"
 storage = "acme.json"
 entryPoint = "https"
 OnHostRule = true
+# Uncomment this if you want to test your domain against ACME staging environment  
+# caServer = "https://acme-staging.api.letsencrypt.org/directory"
 [acme.httpChallenge]
 entryPoint = "http"
 
