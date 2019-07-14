@@ -118,7 +118,7 @@ And check the status
 sudo systemctl status bind9
 ~~~
 
-*You will also need to configure your domain name provider with the same parameters you put in _db.your-own-domain.com_.*
+**You will also need to configure your domain name provider with the same parameters you put in _db.your-own-domain.com_.**
 
 
 
@@ -130,7 +130,7 @@ sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-pr
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
 ~~~
 
-Remplacer <version> par le résultat de :
+Replace <version> with the result of the following command :
    
 ~~~
 lsb_release -cs
@@ -138,7 +138,7 @@ lsb_release -cs
 ~~~
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian <version> -cs stable"
 ~~~
-Puis 
+Then 
 ~~~
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
 sudo apt-get install docker-ce
