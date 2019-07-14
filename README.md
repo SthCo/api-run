@@ -5,6 +5,7 @@ A sample dockerized multi-site.
 
 ## Required
 * Docker
+* Git
 * (Optional) several domain registred in a DNS
 ## Services
 You can display 7 services :
@@ -51,8 +52,109 @@ So the Docker's containers are designed as below :
 
 ## How to run it
 
-### 1. docker-compose.yaml
-There is just some little modifications (10 Steps) to do to the _docker-compose.yaml_ :
+### (Optional) Your own DNS with bind9
+
+First install bind9
+~~~
+apt-get update
+apt-get install bind9 bind9utils bind9-doc dnsutils 
+~~~
+
+Then 
+~~~
+sudo nano /etc/bind/db.your-own-domain.com
+~~~
+
+Fill the file like below :
+~~~
+$TTL    10800
+@       IN      SOA     ns1.your-own-domain.com. root.your-own-domain.com. (
+                    2019070901         ; Serial
+                         10800         ; Refresh
+                         86400         ; Retry
+                       2419200         ; Expire
+                        604800 )       ; Negative Cache TTL
+ ;
+@       IN      NS      ns1
+ns1     IN      A       your-ip
+ghost    IN      A       your-ip
+web    IN      A       your-ip
+nextcloud    IN      A       your-ip
+traefik     IN      A       your-ip
+adminer     IN      A       your-ip
+portainer   IN      A       your-ip
+
+~~~
+
+And
+~~~
+sudo nano /etc/bind/named.conf.local
+~~~
+
+Again fill the file like below :
+~~~
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+ zone "your-own-domain.com" {
+           type master;
+           file "/etc/bind/db.your-own-domain.com";
+      };
+
+
+~~~
+
+Finally run bind9
+~~~
+sudo systemctl start bind9
+~~~
+And check the status 
+~~~
+sudo systemctl status bind9
+~~~
+
+### 0. Install docker
+
+~~~
+sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+~~~
+
+Remplacer <version> par le résultat de :
+   
+~~~
+lsb_release -cs
+~~~
+~~~
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian <version> -cs stable"
+~~~
+Puis 
+~~~
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+sudo apt-get install docker-ce
+~~~
+
+### 1. docker-compose.yml
+There is just some little modifications (10 Steps) to do to the _docker-compose.yml_ :
+
+~~~
+cd /opt
+git clone https://github.com/SthCo/api-run.git
+cd api-run
+sudo nano docker-compose.yml
+~~~
+
+Récupérez ici https://github.com/docker/compose/releases la dernière version et remplacez '1.24.1' par cette dernière
+~~~
+sudo curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+~~~
+
 
 ~~~
 version: '3.7'
@@ -219,6 +321,10 @@ docker network create portainer
 Change also this in the _traefik/traefik.toml_ :
 
 ~~~
+sudo nano traefik/traefik.toml
+~~~
+
+~~~
 ...
 [docker]
 endpoint = "unix:///var/run/docker.sock"
@@ -230,82 +336,21 @@ exposedbydefault = false
 [acme]
 # Put here your mail adress in order to be informed by a bot when you will need to ask for a new SSL certificate
 email = "your@adress.com"
+# Uncomment this if you want to test your domain against ACME staging environment  
+# caServer = "https://acme-staging.api.letsencrypt.org/directory"
 ...
 ~~~
 
 ### 3. Run 
 Then you just need to run docker :
 ~~~
+touch traefik/acme.json
+chmod 600 traefik/acme.json
 docker-compose up -d 
 cd traefik
-touch acme.json
-chmod 600 acme.json
 git clone https://github.com/stefanprodan/dockprom
 cd dockprom
 ADMIN_USER=admin ADMIN_PASSWORD=admin docker-compose up -d
-~~~
-
-### (Optional) Your own DNS with bind9
-
-First install bind9
-~~~
-apt-get install bind9 
-~~~
-
-Then 
-~~~
-sudo nano /etc/bind/db.lucas.picasoft.net
-~~~
-
-Fill the file like below :
-~~~
-$TTL    10800
-@       IN      SOA     ns1.your-own-domain.com. root.your-own-domain.com. (
-                    2019070901         ; Serial
-                         10800         ; Refresh
-                         86400         ; Retry
-                       2419200         ; Expire
-                        604800 )       ; Negative Cache TTL
- ;
-@       IN      NS      ns1
-ns1     IN      A       your-ip
-ghost    IN      A       your-ip
-web    IN      A       your-ip
-nextcloud    IN      A       your-ip
-traefik     IN      A       your-ip
-adminer     IN      A       your-ip
-portainer   IN      A       your-ip
-
-~~~
-
-And
-~~~
-sudo nano /etc/bind/named.conf
-~~~
-
-Again fill the file like below :
-~~~
-// This is the primary configuration file for the BIND DNS server named.
-//
-// Please read /usr/share/doc/bind9/README.Debian.gz for information on the
-// structure of BIND configuration files in Debian, *BEFORE* you customize
-// this configuration file.
-//
-// If you are just adding zones, please do that in /etc/bind/named.conf.local
-
-include "/etc/bind/named.conf.options";
-include "/etc/bind/named.conf.local";
-include "/etc/bind/named.conf.default-zones";
-
-~~~
-
-Finally run bind9
-~~~
-sudo systemctl start bind9
-~~~
-And check the status 
-~~~
-sudo systemctl status bind9
 ~~~
 
 
