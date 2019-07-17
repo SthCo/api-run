@@ -299,6 +299,21 @@ services:
     depends_on:
       - postgresql
       - db
+  portainer:
+    image: portainer/portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/data/portainer:/data
+    networks:
+      - portainer
+    labels:
+      # Specify the coresponding docker network in order to make your proxy works.
+      - traefik.docker.network=portainer
+      # Step 11 : Make sure to change the host with your own IP or domain
+      - traefik.frontend.rule=Host:portainer.my-own-domain.com
+      - traefik.port=9000
+      - traefik.backend=portainer
+    command: -H unix:///var/run/docker.sock
 networks:
   internal:
   nextcloud:
