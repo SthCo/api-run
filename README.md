@@ -250,7 +250,7 @@ services:
     image: postgres
     restart: always
     volumes:
-      - ./nextcloud/db:/var/lib/postgresql/data
+      - ./bdd/nextcloud:/var/lib/postgresql/data
     # Step 6 : Choose here the env.file for you db database, for nextcloud (in Adminer, the host will be "db").
     env_file:
       - ./nextcloud/db.env
