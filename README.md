@@ -1,4 +1,4 @@
-# Architecture du projet API RUN P19
+# Multi-site dockerized project
 A sample dockerized multi-site.
 
 ![bckg](/content/images/bckg.png)
