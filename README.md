@@ -175,9 +175,9 @@ services:
     networks:
       - ghost
       - backend-web
+      - portainer
       - nextcloud
       - adminer-web
-      - portainer
     # The traefik entryPoints
     ports:
       - "80:80"
@@ -247,27 +247,31 @@ services:
       - backend-web
       - adminer-web  
   db:
-    image: postgres
-    restart: always
-    volumes:
-      - ./bdd/nextcloud:/var/lib/postgresql/data
-    # Step 6 : Choose here the env.file for you db database, for nextcloud (in Adminer, the host will be "db").
-    env_file:
-      - ./nextcloud/db.env
+    image: mariadb
+    container_name: nextcloud-mariadb
     networks:
       - internal
+      - adminer-web
+    volumes:
+      - ./bdd/nextcloud:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    # Step 6 : Choose here the params for you database, for nextcloud (the host will be "db").
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_PASSWORD=secret
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    restart: unless-stopped
 
   app:
     image: nextcloud:latest
+
     restart: always
     volumes:
       - ./nextcloud/app:/var/www/html # Pulls from /var/lib/docker/volumes/nextcloud_nextcloud/_data/
       - ./nextcloud/config:/var/www/html/config # Pulls from local dir
       # Step 7 : Choose here the volume you want to mount on your nextcloud
       - /mnt/volume-nextcloud:/mnt/hdd # Pulls from root
-    # Step 8 : Choose here the env.file for you db database, for nextcloud (in Adminer, the host will be "db").
-    env_file:
-      - ./nextcloud/db.env
     depends_on:
       - db
     networks:
