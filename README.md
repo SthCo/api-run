@@ -144,7 +144,14 @@ curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
 sudo apt-get install docker-ce
 ~~~
 
-### 1. docker-compose.yml
+### 1. docker-compose
+
+Get here : https://github.com/docker/compose/releases the last version and use it to replace '1.24.1' in the following command :
+~~~
+sudo curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+~~~
+
 There is just some little modifications (10 Steps) to do to the _docker-compose.yml_ :
 
 ~~~
@@ -153,13 +160,6 @@ git clone https://github.com/SthCo/api-run.git
 cd api-run
 sudo nano docker-compose.yml
 ~~~
-
-Récupérez ici https://github.com/docker/compose/releases la dernière version et remplacez '1.24.1' par cette dernière
-~~~
-sudo curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-~~~
-
 
 ~~~
 version: '3.7'
