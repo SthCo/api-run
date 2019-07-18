@@ -255,7 +255,6 @@ services:
     env_file:
       - ./nextcloud/db.env
     networks:
-      - nextcloud
       - internal
 
   app:
@@ -289,7 +288,6 @@ services:
     volumes:
       - ./nextcloud/redis:/data
     networks:
-      - nextcloud
       - internal
   adminer:
     image: dockette/adminer:full-php5
