@@ -16,11 +16,13 @@ defaultEntryPoints = ["https","http"]
 
 [docker]
 endpoint = "unix:///var/run/docker.sock"
+# Put here your main domain name
 domain = "my-own-domain.com"
 watch = true
 exposedbydefault = false
 
 [acme]
+# Put here your mail adress in order to be informed by a bot when you will need to ask for a new SSL certificate
 email = "your@address.com"
 storage = "acme.json"
 entryPoint = "https"
